@@ -15,19 +15,6 @@ document.getElementById("formSinhVien").addEventListener("submit", function(even
  }
  // Thêm sinh viên vào bảng và localStorage
  // ...
- var table = document.getElementById("bangSinhVien").getElementsByTagName('tbody')[0];
- var newRow = table.insertRow();
- var cell1 = newRow.insertCell(0);
- var cell2 = newRow.insertCell(1);
- var cell3 = newRow.insertCell(2);
- var cell4 = newRow.insertCell(3);
- var cell5 = newRow.insertCell(4);
- cell1.innerHTML = name;
- cell2.innerHTML = msv;
- cell3.innerHTML = Birthd;
- cell4.innerHTML = Class;
- cell5.innerHTML = "di hoc";
-
  var students = JSON.parse(localStorage.getItem("students")) || [];
  students.push({name: name, msv: msv, Birthd: Birthd, Class: Class});
  localStorage.setItem("students", JSON.stringify(students));
@@ -36,8 +23,13 @@ document.getElementById("formSinhVien").addEventListener("submit", function(even
  function hienThiDanhSachSinhVien() {
  // ...
 var students = JSON.parse(localStorage.getItem("students")) || [];
-var table = document.getElementById("bangSinhVien").getElementsByTagName('tbody')[0];
-table.innerHTML = "";
+var table = document.getElementById("bangSinhVien");
+
+var rowCount = table.rows.length;
+for(var i = rowCount - 1; i > 0; i--){
+    table.deleteRow(i);
+}
+
 students.forEach(function(student){
     var newRow = table.insertRow();
     var cell1 = newRow.insertCell(0);
@@ -49,24 +41,20 @@ students.forEach(function(student){
     cell2.innerHTML = student.msv;
     cell3.innerHTML = student.Birthd;
     cell4.innerHTML = student.Class;
-    cell5.innerHTML = "di hoc";
+    cell5.innerHTML = `<button onclick="xoaSinhVien(${index})">Xóa</button> <button onclick="suaSinhVien(${index})">Sửa</button>`;
 });
  }
 
- function deleteRow() {
-    var row = button.parentNode.parentNode;
-    var name = row.cells[0].innerText;
-    var msv = row.cells[1].innerText;
+ function xoaSinhVien(index) {
+    if(confirm("Bạn có muốn xóa sinh viên này không?")){
+        var students = JSON.parse(localStorage.getItem("students")) || [];
 
-    // Xóa sinh viên khỏi localStorage
-    var students = JSON.parse(localStorage.getItem("students")) || [];
-    students = students.filter(function(student) {
-        return !(student.name === name && student.msv === msv);
-    });
-    localStorage.setItem("students", JSON.stringify(students));
+        students.splice(index, 1);
 
-    // Xóa hàng khỏi bảng
-    row.parentNode.removeChild(row);
+        localStorage.setItem("students", JSON.stringify(students));
+
+        hienThiDanhSachSinhVien();
+    }
 }
 
  // Gọi hàm hiển thị danh sách khi trang tải
